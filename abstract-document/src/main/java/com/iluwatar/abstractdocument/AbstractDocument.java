@@ -24,7 +24,10 @@
  */
 package com.iluwatar.abstractdocument;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -53,13 +56,6 @@ public abstract class AbstractDocument implements Document {
 
   @Override
   public <T> Stream<T> children(String key, Function<Map<String, Object>, T> constructor) {
-    Optional<Object> any = Stream.ofNullable(get(key))
-            .filter(Objects::nonNull).findAny();
-    Stream<T> tStream = any.stream().flatMap(i -> {
-      System.out.println(i);
-      return new ArrayList<Map<String, Object>>().stream();
-    }).map(constructor);
-    tStream.forEach(i -> i.toString());
     return Stream.ofNullable(get(key))
         .filter(Objects::nonNull)
         .map(el -> (List<Map<String, Object>>) el)
