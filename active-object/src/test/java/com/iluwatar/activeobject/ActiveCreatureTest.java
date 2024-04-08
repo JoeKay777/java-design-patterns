@@ -27,16 +27,31 @@ package com.iluwatar.activeobject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.CountDownLatch;
+
 class ActiveCreatureTest {
 	
 	@Test
 	void executionTest() throws InterruptedException {
+		CountDownLatch latch = new CountDownLatch(1);
+		System.out.println(Thread.currentThread().getName());
 		ActiveCreature orc = new Orc("orc1");
 		assertEquals("orc1",orc.name());
 		assertEquals(0,orc.getStatus());
 		orc.eat();
 		orc.roam();
-		orc.kill(0);
+//		latch.await();
+//		orc.kill(0);
+	}
+
+	public static void main(String[] args) throws InterruptedException {
+		System.out.println(Thread.currentThread().getName());
+		ActiveCreature orc = new Orc("orc1");
+		assertEquals("orc1",orc.name());
+		assertEquals(0,orc.getStatus());
+		orc.eat();
+		orc.roam();
 	}
 	
 

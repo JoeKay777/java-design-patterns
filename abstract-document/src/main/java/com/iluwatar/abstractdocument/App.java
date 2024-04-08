@@ -28,6 +28,8 @@ import com.iluwatar.abstractdocument.domain.Car;
 import com.iluwatar.abstractdocument.domain.enums.Property;
 import java.util.List;
 import java.util.Map;
+
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 
 /**

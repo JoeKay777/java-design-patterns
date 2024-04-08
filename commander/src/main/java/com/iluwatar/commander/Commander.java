@@ -135,29 +135,29 @@ public class Commander {
       }
       String transactionId = shippingService.receiveRequest(order.item, order.user.address);
       //could save this transaction id in a db too
-      LOG.info(ORDER_ID + ": Shipping placed successfully, transaction id: {}",
+      LOGGER.info(ORDER_ID + ": Shipping placed successfully, transaction id: {}",
               order.id, transactionId);
-      LOG.info("Order has been placed and will be shipped to you. Please wait while we make your"
+      LOGGER.info("Order has been placed and will be shipped to you. Please wait while we make your"
           + " payment... ");
       sendPaymentRequest(order);
     };
     Retry.HandleErrorIssue<Order> handleError = (o, err) -> {
       if (ShippingNotPossibleException.class.isAssignableFrom(err.getClass())) {
-        LOG.info("Shipping is currently not possible to your address. We are working on the problem"
+        LOGGER.info("Shipping is currently not possible to your address. We are working on the problem"
             + " and will get back to you asap.");
         finalSiteMsgShown = true;
-        LOG.info(ORDER_ID + ": Shipping not possible to address, trying to add problem "
+        LOGGER.info(ORDER_ID + ": Shipping not possible to address, trying to add problem "
             + "to employee db..", order.id);
         employeeHandleIssue(o);
       } else if (ItemUnavailableException.class.isAssignableFrom(err.getClass())) {
-        LOG.info("This item is currently unavailable. We will inform you as soon as the item "
+        LOGGER.info("This item is currently unavailable. We will inform you as soon as the item "
             + "becomes available again.");
         finalSiteMsgShown = true;
-        LOG.info(ORDER_ID + ": Item {}" + " unavailable, trying to add "
+        LOGGER.info(ORDER_ID + ": Item {}" + " unavailable, trying to add "
             + "problem to employee handle..", order.id, order.item);
         employeeHandleIssue(o);
       } else {
-        LOG.info("Sorry, there was a problem in creating your order. Please try later.");
+        LOGGER.info("Sorry, there was a problem in creating your order. Please try later.");
         LOG.error(ORDER_ID + ": Shipping service unavailable, order not placed..", order.id);
         finalSiteMsgShown = true;
       }
@@ -191,10 +191,10 @@ public class Commander {
         if (order.paid.equals(PaymentStatus.TRYING)) {
           var transactionId = paymentService.receiveRequest(order.price);
           order.paid = PaymentStatus.DONE;
-          LOG.info(ORDER_ID + ": Payment successful, transaction Id: {}",
+          LOGGER.info(ORDER_ID + ": Payment successful, transaction Id: {}",
                   order.id, transactionId);
           if (!finalSiteMsgShown) {
-            LOG.info("Payment made successfully, thank you for shopping with us!!");
+            LOGGER.info("Payment made successfully, thank you for shopping with us!!");
             finalSiteMsgShown = true;
           }
           sendSuccessMessage(order);
@@ -203,7 +203,7 @@ public class Commander {
       Retry.HandleErrorIssue<Order> handleError = (o, err) -> {
         if (PaymentDetailsErrorException.class.isAssignableFrom(err.getClass())) {
           if (!finalSiteMsgShown) {
-            LOG.info("There was an error in payment. Your account/card details "
+            LOGGER.info("There was an error in payment. Your account/card details "
                 + "may have been incorrect. "
                 + "Meanwhile, your order has been converted to COD and will be shipped.");
             finalSiteMsgShown = true;
@@ -214,7 +214,7 @@ public class Commander {
         } else {
           if (o.messageSent.equals(MessageSent.NONE_SENT)) {
             if (!finalSiteMsgShown) {
-              LOG.info("There was an error in payment. We are on it, and will get back to you "
+              LOGGER.info("There was an error in payment. We are on it, and will get back to you "
                   + "asap. Don't worry, your order has been placed and will be shipped.");
               finalSiteMsgShown = true;
             }
@@ -263,7 +263,7 @@ public class Commander {
         }
         queue.add(qt);
         queueItems++;
-        LOG.info(ORDER_ID + ": {}" + " task enqueued..", qt.order.id, qt.getType());
+        LOGGER.info(ORDER_ID + ": {}" + " task enqueued..", qt.order.id, qt.getType());
         tryDoingTasksInQueue();
       };
       Retry.HandleErrorIssue<QueueTask> handleError = (qt1, err) -> {
@@ -363,7 +363,7 @@ public class Commander {
         && System.currentTimeMillis() - o.createdTime < messageTime) {
       var qt = new QueueTask(order, TaskType.MESSAGING, 2);
       updateQueue(qt);
-      LOG.info(ORDER_ID + ": Error in sending Payment Success message, trying to"
+      LOGGER.info(ORDER_ID + ": Error in sending Payment Success message, trying to"
           + " queue task and add to employee handle..", order.id);
       employeeHandleIssue(order);
     }
@@ -385,7 +385,7 @@ public class Commander {
           && !order.messageSent.equals(MessageSent.PAYMENT_SUCCESSFUL)) {
         var requestId = messagingService.receiveRequest(2);
         order.messageSent = MessageSent.PAYMENT_SUCCESSFUL;
-        LOG.info(ORDER_ID + ": Payment Success message sent,"
+        LOGGER.info(ORDER_ID + ": Payment Success message sent,"
             + REQUEST_ID, order.id, requestId);
       }
     };
@@ -442,7 +442,7 @@ public class Commander {
         && !order.messageSent.equals(MessageSent.PAYMENT_SUCCESSFUL)) {
       var requestId = messagingService.receiveRequest(0);
       order.messageSent = MessageSent.PAYMENT_FAIL;
-      LOG.info(ORDER_ID + ": Payment Failure message sent successfully,"
+      LOGGER.info(ORDER_ID + ": Payment Failure message sent successfully,"
           + REQUEST_ID, order.id, requestId);
     }
   }
@@ -499,7 +499,7 @@ public class Commander {
         .equals(MessageSent.NONE_SENT)) {
       var requestId = messagingService.receiveRequest(1);
       order.messageSent = MessageSent.PAYMENT_TRYING;
-      LOG.info(ORDER_ID + ": Payment Error message sent successfully,"
+      LOGGER.info(ORDER_ID + ": Payment Error message sent successfully,"
           + REQUEST_ID, order.id, requestId);
     }
   }
@@ -520,7 +520,7 @@ public class Commander {
         if (!order.addedToEmployeeHandle) {
           employeeDb.receiveRequest(order);
           order.addedToEmployeeHandle = true;
-          LOG.info(ORDER_ID + ": Added order to employee database", order.id);
+          LOGGER.info(ORDER_ID + ": Added order to employee database", order.id);
         }
       };
       Retry.HandleErrorIssue<Order> handleError = (o, err) -> {

@@ -79,7 +79,7 @@ public final class App {
   private static void noErrors() throws Exception {
     op = new FindCustomer("123");
     op.perform();
-    LOG.info("Sometimes the operation executes with no errors.");
+    LOGGER.info("Sometimes the operation executes with no errors.");
   }
 
   private static void errorNoRetry() throws Exception {
@@ -87,7 +87,7 @@ public final class App {
     try {
       op.perform();
     } catch (CustomerNotFoundException e) {
-      LOG.info("Yet the operation will throw an error every once in a while.");
+      LOGGER.info("Yet the operation will throw an error every once in a while.");
     }
   }
 
@@ -100,7 +100,7 @@ public final class App {
     );
     op = retry;
     final var customerId = op.perform();
-    LOG.info(String.format(
+    LOGGER.info(String.format(
         "However, retrying the operation while ignoring a recoverable error will eventually yield "
             + "the result %s after a number of attempts %s", customerId, retry.attempts()
     ));
@@ -115,7 +115,7 @@ public final class App {
     );
     op = retry;
     final var customerId = op.perform();
-    LOG.info(String.format(
+    LOGGER.info(String.format(
         "However, retrying the operation while ignoring a recoverable error will eventually yield "
             + "the result %s after a number of attempts %s", customerId, retry.attempts()
     ));
