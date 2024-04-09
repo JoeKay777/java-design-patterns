@@ -1,4 +1,5 @@
 ---
+## 重要度：★★★
 title: Acyclic Visitor
 category: Behavioral
 language: zh

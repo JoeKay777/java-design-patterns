@@ -1,4 +1,6 @@
 ---
+## 重要度：★★★
+
 title: Abstract Document
 category: Structural
 language: zh

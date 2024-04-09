@@ -1,4 +1,4 @@
-package com.iluwatar.ambassador;
+package com.iluwatar.acyclicvisitor;
 
 /**
  * @Description: TODO
